@@ -28,6 +28,7 @@ Servo myservo;
 boolean goesForward = false;
 int distance = 100;
 int speedSet = 0;
+boolean alerted_unknown_mode = false;
 
 const int motorPin1  = 11;
 const int motorPin2  = 10;
@@ -70,8 +71,7 @@ int lookLeft() {
 int readPing() {
   delay(70);
   int cm = sonar.ping_cm();
-  if (cm == 0)
-  {
+  if (cm == 0) {
     cm = 250;
   }
   return cm;
@@ -155,31 +155,38 @@ void setup() {
 }
 
 void loop() {
-  int distanceR = 0;
-  int distanceL =  0;
-  delay(40);
-
-  if (distance <= 20) {
-    moveStop();
-    delay(100);
-    moveBackward();
-    delay(300);
-    moveStop();
-    delay(200);
-    distanceR = lookRight();
-    delay(200);
-    distanceL = lookLeft();
-    delay(200);
-
-    if (distanceR >= distanceL) {
-      turnRight();
+  if (currentMode() != UNKNOWN_MODE) {
+    alerted_unknown_mode = false;
+    int distanceR = 0;
+    int distanceL =  0;
+    delay(40);
+    if (distance <= 20) {
       moveStop();
+      delay(100);
+      moveBackward();
+      delay(300);
+      moveStop();
+      delay(200);
+      distanceR = lookRight();
+      delay(200);
+      distanceL = lookLeft();
+      delay(200);
+
+      if (distanceR >= distanceL) {
+        turnRight();
+        moveStop();
+      } else {
+        turnLeft();
+        moveStop();
+      }
     } else {
-      turnLeft();
-      moveStop();
+      moveForward();
     }
+    distance = readPing();
   } else {
-    moveForward();
+    if (!alerted_unknown_mode) {
+      lcd.print("UNKNOWN MODE");
+      alerted_unknown_mode = true;
+    }
   }
-  distance = readPing();
 }
