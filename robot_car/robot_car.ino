@@ -1,12 +1,14 @@
-/*#include <NewPing.h>
-  #include <Servo.h>*/
+//#include <Servo.h>
+#include <NewPing.h>
 #include <LiquidCrystal.h>
 #include <SoftwareSerial.h>
-/*
-  #define TRIG_PIN A4
-  #define ECHO_PIN A5
-  #define MAX_DISTANCE 200
-*/
+
+#define TRIG_PIN_FRONTAL 47
+#define ECHO_PIN_FRONTAL 46
+#define TRIG_PIN_TRASERO 45
+#define ECHO_PIN_TRASERO 44
+#define MAX_DISTANCE 200
+
 // Definición de modos
 #define NORMAL_MODE 0
 #define TEST_MODE 1
@@ -26,12 +28,13 @@ SoftwareSerial BT(10, 11);
 // with the arduino pin number it is connected to
 
 int current_mode = -1;
-String modos[] = {"NORMAL","TEST","MANTENIMIENTO"};
+String modos[] = {"NORMAL", "TEST", "MANTENIMIENTO"};
 const int rs = 7, en = 6, d4 = 5, d5 = 4, d6 = 3, d7 = 2;
 LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
-/*
-  NewPing sonar(TRIG_PIN, ECHO_PIN, MAX_DISTANCE);
-  Servo myservo;
+
+NewPing sonar_frontal(TRIG_PIN_FRONTAL, ECHO_PIN_FRONTAL, MAX_DISTANCE);
+NewPing sonar_trasero(TRIG_PIN_TRASERO, ECHO_PIN_TRASERO, MAX_DISTANCE);
+/*  Servo myservo;
 
   boolean goesForward = false;
   int distance = 100;
@@ -157,25 +160,41 @@ void opcion()
   escribir_pantalla(mensaje);
 }
 
+int leer_sonar_frontal()
+{
+  int distancia = sonar_frontal.ping_cm();
+
+  if (distancia == 0)
+    distancia = MAX_DISTANCE;
+
+  return distancia;
+}
+
+int leer_sonar_trasero()
+{
+  int distancia = sonar_trasero.ping_cm();
+
+  if (distancia == 0)
+    distancia = MAX_DISTANCE;
+
+  return distancia;
+}
+
 void setup() {
   BT.begin(9600);
   lcd.begin(16, 2);
   /*
     myservo.attach(9);
     myservo.write(115);
-    delay(2000);
-    distance = readPing();
-    delay(100);
-    distance = readPing();
-    delay(100);
-    distance = readPing();
-    delay(100);
-    distance = readPing();
-    delay(100);*/
+  */
 }
 
 void loop() {
   int accion = leer_bluetooth();
+  int distancia_frontal = leer_sonar_frontal();
+  int distancia_trasera = leer_sonar_trasero();
+
+  escribir_pantalla("PING T: "+(String)distancia_trasera);
   if (accion > 0)
   {
     switch (accion)
