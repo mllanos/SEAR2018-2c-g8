@@ -194,7 +194,6 @@ void loop() {
   int distancia_frontal = leer_sonar_frontal();
   int distancia_trasera = leer_sonar_trasero();
 
-  escribir_pantalla("PING T: "+(String)distancia_trasera);
   if (accion > 0)
   {
     switch (accion)
