@@ -69,11 +69,16 @@ void escribir_pantalla(String mensaje) {
   lcd.print(mensaje);
 }
 
-void mover_adelante()
-{
-  switch (current_mode)
-  {
+void mover_adelante() {
+  int distancia = leer_sonar_frontal();
+  switch (current_mode) {
     case NORMAL_MODE:
+      if(distancia > 10) {
+        /*analogWrite(motorPin1, 180);
+        analogWrite(motorPin2, 0);
+        analogWrite(motorPin3, 180);
+        analogWrite(motorPin4, 0);*/
+      }
       break;
     case TEST_MODE:
       escribir_pantalla("ADELANTE");
@@ -83,11 +88,18 @@ void mover_adelante()
   }
 }
 
-void mover_atras()
-{
-  switch (current_mode)
-  {
+void mover_atras() {
+  int distancia = leer_sonar_trasero();
+  switch (current_mode) {
     case NORMAL_MODE:
+      if(distancia > 10) {
+        /*
+        analogWrite(motorPin1, 0);
+        analogWrite(motorPin2, 180);
+        analogWrite(motorPin3, 0);
+        analogWrite(motorPin4, 180);
+        */
+      }
       break;
     case TEST_MODE:
       escribir_pantalla("ATRAS");
@@ -97,10 +109,8 @@ void mover_atras()
   }
 }
 
-void mover_izquierda()
-{
-  switch (current_mode)
-  {
+void mover_izquierda() {
+  switch (current_mode) {
     case NORMAL_MODE:
       break;
     case TEST_MODE:
@@ -111,10 +121,8 @@ void mover_izquierda()
   }
 }
 
-void mover_derecha()
-{
-  switch (current_mode)
-  {
+void mover_derecha() {
+  switch (current_mode) {
     case NORMAL_MODE:
       break;
     case TEST_MODE:
@@ -125,10 +133,8 @@ void mover_derecha()
   }
 }
 
-void encendido()
-{
-  switch (current_mode)
-  {
+void encendido() {
+  switch (current_mode) {
     case NORMAL_MODE:
       break;
     case TEST_MODE:
@@ -139,10 +145,8 @@ void encendido()
   }
 }
 
-void apagado()
-{
-  switch (current_mode)
-  {
+void apagado() {
+  switch (current_mode) {
     case NORMAL_MODE:
       break;
     case TEST_MODE:
@@ -153,15 +157,13 @@ void apagado()
   }
 }
 
-void opcion()
-{
+void opcion() {
   change_mode();
   String mensaje = "MODO " + modos[current_mode];
   escribir_pantalla(mensaje);
 }
 
-int leer_sonar_frontal()
-{
+int leer_sonar_frontal() {
   int distancia = sonar_frontal.ping_cm();
 
   if (distancia == 0)
@@ -170,8 +172,7 @@ int leer_sonar_frontal()
   return distancia;
 }
 
-int leer_sonar_trasero()
-{
+int leer_sonar_trasero() {
   int distancia = sonar_trasero.ping_cm();
 
   if (distancia == 0)
@@ -191,13 +192,9 @@ void setup() {
 
 void loop() {
   int accion = leer_bluetooth();
-  int distancia_frontal = leer_sonar_frontal();
-  int distancia_trasera = leer_sonar_trasero();
 
-  if (accion > 0)
-  {
-    switch (accion)
-    {
+  if (accion > 0) {
+    switch (accion) {
       case ADELANTE:
         mover_adelante();
         break;
