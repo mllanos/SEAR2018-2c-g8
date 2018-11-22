@@ -34,27 +34,33 @@ LiquidCrystal lcd(rs, en, d4, d5, d6, d7);
 
 NewPing sonar_frontal(TRIG_PIN_FRONTAL, ECHO_PIN_FRONTAL, MAX_DISTANCE);
 NewPing sonar_trasero(TRIG_PIN_TRASERO, ECHO_PIN_TRASERO, MAX_DISTANCE);
-/*  Servo myservo;
+//Servo myservo;
 
-  boolean goesForward = false;
-  int distance = 100;
-  int speedSet = 0;*/
-/*
-  const int motorPin1  = 11;
-  const int motorPin2  = 10;
-  //Motor B
-  const int motorPin3  = 6;
-  const int motorPin4  = 5;
-*/
+boolean goesForward = false;
+int distance = 100;
+int speedSet = 0;
+
+const int motorPin1  = 31;
+const int motorPin2  = 30;
+//Motor B
+const int motorPin3  = 33;
+const int motorPin4  = 32;
+
 // Retorna el modo de operacion actual.
 
 byte change_mode() {
   current_mode = ++current_mode % 3;
+
+  analogWrite(motorPin1, 0);
+  analogWrite(motorPin2, 0);
+  analogWrite(motorPin3, 0);
+  analogWrite(motorPin4, 0);
+
   return current_mode;
 }
 
 int leer_bluetooth() {
-  if (BT.available())   // Si llega un dato por el puerto BT se envÃ­a al monitor serial
+  if (BT.available())   // Si llega un dato por el puerto BT se envía al monitor serial
   {
     return BT.read();
   }
@@ -70,15 +76,12 @@ void escribir_pantalla(String mensaje) {
 }
 
 void mover_adelante() {
-  int distancia = leer_sonar_frontal();
   switch (current_mode) {
     case NORMAL_MODE:
-      if(distancia > 10) {
-        /*analogWrite(motorPin1, 180);
-        analogWrite(motorPin2, 0);
-        analogWrite(motorPin3, 180);
-        analogWrite(motorPin4, 0);*/
-      }
+      analogWrite(motorPin1, 0);
+      analogWrite(motorPin2, 180);
+      analogWrite(motorPin3, 0);
+      analogWrite(motorPin4, 180);
       break;
     case TEST_MODE:
       escribir_pantalla("ADELANTE");
@@ -89,17 +92,12 @@ void mover_adelante() {
 }
 
 void mover_atras() {
-  int distancia = leer_sonar_trasero();
   switch (current_mode) {
     case NORMAL_MODE:
-      if(distancia > 10) {
-        /*
-        analogWrite(motorPin1, 0);
-        analogWrite(motorPin2, 180);
-        analogWrite(motorPin3, 0);
-        analogWrite(motorPin4, 180);
-        */
-      }
+      analogWrite(motorPin1, 180);
+      analogWrite(motorPin2, 0);
+      analogWrite(motorPin3, 180);
+      analogWrite(motorPin4, 0);
       break;
     case TEST_MODE:
       escribir_pantalla("ATRAS");
@@ -112,6 +110,10 @@ void mover_atras() {
 void mover_izquierda() {
   switch (current_mode) {
     case NORMAL_MODE:
+      analogWrite(motorPin1, 180);
+      analogWrite(motorPin2, 0);
+      analogWrite(motorPin3, 0);
+      analogWrite(motorPin4, 180);
       break;
     case TEST_MODE:
       escribir_pantalla("IZQUIERDA");
@@ -124,6 +126,10 @@ void mover_izquierda() {
 void mover_derecha() {
   switch (current_mode) {
     case NORMAL_MODE:
+      analogWrite(motorPin1, 0);
+      analogWrite(motorPin2, 180);
+      analogWrite(motorPin3, 180);
+      analogWrite(motorPin4, 0);
       break;
     case TEST_MODE:
       escribir_pantalla("DERECHA");
@@ -148,6 +154,10 @@ void encendido() {
 void apagado() {
   switch (current_mode) {
     case NORMAL_MODE:
+      analogWrite(motorPin1, 0);
+      analogWrite(motorPin2, 0);
+      analogWrite(motorPin3, 0);
+      analogWrite(motorPin4, 0);
       break;
     case TEST_MODE:
       escribir_pantalla("APAGADO");
@@ -184,10 +194,14 @@ int leer_sonar_trasero() {
 void setup() {
   BT.begin(9600);
   lcd.begin(16, 2);
-  /*
-    myservo.attach(9);
-    myservo.write(115);
-  */
+
+  pinMode(motorPin1, OUTPUT);
+  pinMode(motorPin2, OUTPUT);
+  pinMode(motorPin3, OUTPUT);
+  pinMode(motorPin4, OUTPUT);
+  //myservo.attach(9);
+  //myservo.write(115);
+
 }
 
 void loop() {
@@ -217,5 +231,16 @@ void loop() {
         opcion();
         break;
     }
+  }
+
+
+  if (leer_sonar_frontal() <= 10) {
+    analogWrite(motorPin2, 0);
+    analogWrite(motorPin4, 0);
+  }
+
+  if (leer_sonar_trasero() <= 10) {
+    analogWrite(motorPin1, 0);
+    analogWrite(motorPin3, 0);
   }
 }
