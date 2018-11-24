@@ -1,4 +1,4 @@
-# proyecto
+# SEAR2018-2c-g8
 
 Video:
 https://www.youtube.com/watch?v=kewza7RyKMQ
