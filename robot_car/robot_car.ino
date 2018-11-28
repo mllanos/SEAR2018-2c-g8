@@ -169,7 +169,7 @@ void apagado() {
 
 void opcion() {
   change_mode();
-  String mensaje = "MODO " + modos[current_mode];
+  String mensaje = modos[current_mode];
   escribir_pantalla(mensaje);
 }
 
@@ -189,6 +189,36 @@ int leer_sonar_trasero() {
     distancia = MAX_DISTANCE;
 
   return distancia;
+}
+
+void mantenimiento() {
+  if (current_mode == MAINTENANCE_MODE) {
+    int wait = 1000;
+    int velocidad = 180;
+    //prueba motores
+    analogWrite(motorPin2, velocidad);
+    analogWrite(motorPin4, velocidad);
+    delay(wait);
+    analogWrite(motorPin2, 0);
+    analogWrite(motorPin4, 0);
+
+    analogWrite(motorPin1, velocidad);
+    analogWrite(motorPin3, velocidad);
+    delay(wait);
+    analogWrite(motorPin1, 0);
+    analogWrite(motorPin3, 0);
+
+    //prueba bluetooth
+    escribir_pantalla((String)leer_sonar_frontal());
+    delay(wait);
+    escribir_pantalla((String)leer_sonar_trasero());
+    delay(wait);
+
+    escribir_pantalla("funciona");
+    delay(wait);
+
+    opcion();
+  }
 }
 
 void setup() {
@@ -243,4 +273,6 @@ void loop() {
     analogWrite(motorPin1, 0);
     analogWrite(motorPin3, 0);
   }
+
+  mantenimiento();
 }
