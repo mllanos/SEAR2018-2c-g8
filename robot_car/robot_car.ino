@@ -56,6 +56,9 @@ byte change_mode() {
   analogWrite(motorPin3, 0);
   analogWrite(motorPin4, 0);
 
+  if (current_mode == TEST_MODE) {
+    test_pantalla();
+  }
   return current_mode;
 }
 
@@ -191,6 +194,26 @@ int leer_sonar_trasero() {
   return distancia;
 }
 
+void test_pantalla() {
+  int wait = 1000;
+  lcd.clear();
+  lcd.print("0123456789ABCDEF");
+  delay(wait);
+  lcd.clear();
+  lcd.setCursor(0, 1);
+  lcd.print("0123456789ABCDEF");
+  delay(500);
+  lcd.scrollDisplayRight();
+  delay(500);
+  lcd.scrollDisplayRight();
+  delay(500);
+  lcd.scrollDisplayLeft();
+  delay(500);
+  lcd.scrollDisplayLeft();
+  delay(wait);
+  lcd.clear();
+}
+
 void mantenimiento() {
   if (current_mode == MAINTENANCE_MODE) {
     int wait = 1000;
@@ -214,6 +237,8 @@ void mantenimiento() {
     escribir_pantalla((String)leer_sonar_trasero());
     delay(wait);
 
+    test_pantalla();
+
     escribir_pantalla("funciona");
     delay(wait);
 
@@ -231,7 +256,6 @@ void setup() {
   pinMode(motorPin4, OUTPUT);
   //myservo.attach(9);
   //myservo.write(115);
-
 }
 
 void loop() {
@@ -265,13 +289,29 @@ void loop() {
 
 
   if (leer_sonar_frontal() <= 10) {
-    analogWrite(motorPin2, 0);
-    analogWrite(motorPin4, 0);
+    if (current_mode == NORMAL_MODE) {
+      analogWrite(motorPin2, 0);
+      analogWrite(motorPin4, 0);
+    }
+
+    if (current_mode == TEST_MODE) {
+      escribir_pantalla("FRENO FRONTAL");
+      delay(500);
+      lcd.clear();
+    }
   }
 
   if (leer_sonar_trasero() <= 10) {
-    analogWrite(motorPin1, 0);
-    analogWrite(motorPin3, 0);
+    if (current_mode == NORMAL_MODE) {
+      analogWrite(motorPin1, 0);
+      analogWrite(motorPin3, 0);
+    }
+
+    if (current_mode == TEST_MODE) {
+      escribir_pantalla("FRENO TRASERO");
+      delay(500);
+      lcd.clear();
+    }
   }
 
   mantenimiento();
